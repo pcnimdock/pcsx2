@@ -171,7 +171,8 @@ namespace usb_lightgun
 
         float gamepad_xr = 0;
         float gamepad_xl = 0;
-		float gamepad_y = 0;
+		float gamepad_yu = 0;
+		float gamepad_yd = 0;
 
 	};
 
@@ -431,7 +432,10 @@ namespace usb_lightgun
         pointer_x += us->gamepad_xr;
         pointer_x += 1;
         pointer_x /= 2;
-		pointer_y = us->gamepad_y;
+		pointer_y = us->gamepad_yu;
+		pointer_y += us->gamepad_yd;
+		pointer_y += 1;
+		pointer_y /= 2;
 
 		s16 pos_x, pos_y;
 		if (pointer_x < 0.0f || pointer_y < 0.0f)
@@ -542,9 +546,9 @@ namespace usb_lightgun
 			case BID_AXIS_XR:
                 return 1.0f - (static_cast<float>(s->gamepad_xr) / 65535.0f);
 			case BID_AXIS_YU:
-				return 1.0f - (static_cast<float>(s->gamepad_y) / 65535.0f);
+				return 1.0f - (static_cast<float>(s->gamepad_yu) / 65535.0f);
 			case BID_AXIS_YD:
-				return 1.0f - (static_cast<float>(s->gamepad_y) / 65535.0f);
+				return 1.0f - (static_cast<float>(s->gamepad_yd) / 65535.0f);
 
 		}
 		const u32 bit = 1u << bind_index;
@@ -567,11 +571,11 @@ namespace usb_lightgun
 				return;
 			case BID_AXIS_YU:
             //printf("yu:%f\r\n",value);
-                s->gamepad_y = value;//static_cast<u32>(65535 - std::clamp<long>(std::lroundf(value * 65535.0f), 0, 65535));
+                s->gamepad_yu = (-1)*value;//static_cast<u32>(65535 - std::clamp<long>(std::lroundf(value * 65535.0f), 0, 65535));
 				return;
 			case BID_AXIS_YD:
             //printf("yd:%f\r\n",value);
-                s->gamepad_y = value;//static_cast<u32>(65535 - std::clamp<long>(std::lroundf(value * 65535.0f), 0, 65535));
+                s->gamepad_yd = value;//static_cast<u32>(65535 - std::clamp<long>(std::lroundf(value * 65535.0f), 0, 65535));
 				return;
 		}
 		const u32 bit = 1u << bind_index;
