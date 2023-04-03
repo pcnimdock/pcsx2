@@ -1,5 +1,32 @@
 # PCSX2
 Modified fork for add support to lightgun in joystick mode
+file:///home/fran/Descargas/opcion1.png![image](https://user-images.githubusercontent.com/20031970/229386789-5fdd10f5-741a-4652-87bb-6dbc11c95d80.png)
+file:///home/fran/Descargas/opcion2.png![image](https://user-images.githubusercontent.com/20031970/229386801-f52f7d6d-3935-4ec1-9df6-e23c9c9c62fc.png)
+
+You can force the controller mapping in linux in ~/.config/PCSX2/inis/PCSX2.ini
+in USB1 and USB2 section
+
+Example:
+[USB1]
+Type = guncon2
+guncon2_use_gamepad = true
+guncon2_AimX_L = SDL-0/-LeftX
+guncon2_AimX_R = SDL-0/+LeftX
+guncon2_AimY_U = SDL-0/+LeftY
+guncon2_AimY_D = SDL-0/-LeftY
+guncon2_Up = SDL-0/-RightY
+guncon2_Down = SDL-0/+RightY
+guncon2_Left = SDL-0/-RightX
+guncon2_Right = SDL-0/+RightX
+guncon2_Trigger = SDL-0/Button21
+guncon2_ShootOffscreen = SDL-0/Button28
+guncon2_Recalibrate = SDL-0/RightShoulder
+guncon2_A = SDL-0/A
+guncon2_C = SDL-0/B
+guncon2_B = SDL-0/Y
+guncon2_Select = SDL-0/Back
+guncon2_Start = SDL-0/Start
+
 
 PCSX2 is a free and open-source PlayStation 2 (PS2) emulator. Its purpose is to emulate the PS2's hardware, using a combination of MIPS CPU [Interpreters](<https://en.wikipedia.org/wiki/Interpreter_(computing)>), [Recompilers](https://en.wikipedia.org/wiki/Dynamic_recompilation) and a [Virtual Machine](https://en.wikipedia.org/wiki/Virtual_machine) which manages hardware states and PS2 system memory. This allows you to play PS2 games on your PC, with many additional features and benefits.
 
