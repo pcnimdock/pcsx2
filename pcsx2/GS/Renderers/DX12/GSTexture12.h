@@ -1,0 +1,94 @@
+/*  PCSX2 - PS2 Emulator for PCs
+ *  Copyright (C) 2002-2021 PCSX2 Dev Team
+ *
+ *  PCSX2 is free software: you can redistribute it and/or modify it under the terms
+ *  of the GNU Lesser General Public License as published by the Free Software Found-
+ *  ation, either version 3 of the License, or (at your option) any later version.
+ *
+ *  PCSX2 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ *  PURPOSE.  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along with PCSX2.
+ *  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#pragma once
+
+#include "GS/GS.h"
+#include "GS/Renderers/Common/GSTexture.h"
+#include "common/D3D12/Context.h"
+#include "common/D3D12/Texture.h"
+
+class GSTexture12 final : public GSTexture
+{
+public:
+	GSTexture12(Type type, Format format, D3D12::Texture texture);
+	~GSTexture12() override;
+
+	static std::unique_ptr<GSTexture12> Create(Type type, u32 width, u32 height, u32 levels, Format format,
+		DXGI_FORMAT d3d_format, DXGI_FORMAT srv_format, DXGI_FORMAT rtv_format, DXGI_FORMAT dsv_format);
+
+	__fi D3D12::Texture& GetTexture() { return m_texture; }
+	__fi const D3D12::DescriptorHandle& GetSRVDescriptor() const { return m_texture.GetSRVDescriptor(); }
+	__fi const D3D12::DescriptorHandle& GetRTVOrDSVHandle() const { return m_texture.GetWriteDescriptor(); }
+	__fi D3D12_RESOURCE_STATES GetResourceState() const { return m_texture.GetState(); }
+	__fi DXGI_FORMAT GetNativeFormat() const { return m_texture.GetFormat(); }
+	__fi ID3D12Resource* GetResource() const { return m_texture.GetResource(); }
+
+	void* GetNativeHandle() const override;
+
+	bool Update(const GSVector4i& r, const void* data, int pitch, int layer = 0) override;
+	bool Map(GSMap& m, const GSVector4i* r = NULL, int layer = 0) override;
+	void Unmap() override;
+	void GenerateMipmap() override;
+	void Swap(GSTexture* tex) override;
+
+	void TransitionToState(D3D12_RESOURCE_STATES state);
+	void CommitClear();
+	void CommitClear(ID3D12GraphicsCommandList* cmdlist);
+
+	// Call when the texture is bound to the pipeline, or read from in a copy.
+	__fi void SetUsedThisCommandBuffer()
+	{
+		m_use_fence_counter = g_d3d12_context->GetCurrentFenceValue();
+	}
+
+private:
+	ID3D12GraphicsCommandList* GetCommandBufferForUpdate();
+	ID3D12Resource* AllocateUploadStagingBuffer(const void* data, u32 pitch, u32 upload_pitch, u32 height) const;
+	void CopyTextureDataForUpload(void* dst, const void* src, u32 pitch, u32 upload_pitch, u32 height) const;
+
+	D3D12::Texture m_texture;
+
+	// Contains the fence counter when the texture was last used.
+	// When this matches the current fence counter, the texture was used this command buffer.
+	u64 m_use_fence_counter = 0;
+
+	GSVector4i m_map_area = GSVector4i::zero();
+	u32 m_map_level = UINT32_MAX;
+};
+
+class GSDownloadTexture12 final : public GSDownloadTexture
+{
+public:
+	~GSDownloadTexture12() override;
+
+	static std::unique_ptr<GSDownloadTexture12> Create(u32 width, u32 height, GSTexture::Format format);
+
+	void CopyFromTexture(const GSVector4i& drc, GSTexture* stex, const GSVector4i& src, u32 src_level, bool use_transfer_pitch) override;
+
+	bool Map(const GSVector4i& read_rc) override;
+	void Unmap() override;
+
+	void Flush() override;
+
+private:
+	GSDownloadTexture12(u32 width, u32 height, GSTexture::Format format);
+
+	wil::com_ptr_nothrow<D3D12MA::Allocation> m_allocation;
+	wil::com_ptr_nothrow<ID3D12Resource> m_buffer;
+
+	u64 m_copy_fence_value = 0;
+	u32 m_buffer_size = 0;
+};
