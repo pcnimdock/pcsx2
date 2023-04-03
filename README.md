@@ -1,7 +1,7 @@
 # PCSX2
 Modified fork for add support to lightgun in joystick mode
-file:///home/fran/Descargas/opcion1.png![image](https://user-images.githubusercontent.com/20031970/229386789-5fdd10f5-741a-4652-87bb-6dbc11c95d80.png)
-file:///home/fran/Descargas/opcion2.png![image](https://user-images.githubusercontent.com/20031970/229386801-f52f7d6d-3935-4ec1-9df6-e23c9c9c62fc.png)
+screen1![image](https://user-images.githubusercontent.com/20031970/229386789-5fdd10f5-741a-4652-87bb-6dbc11c95d80.png)
+screen2![image](https://user-images.githubusercontent.com/20031970/229386801-f52f7d6d-3935-4ec1-9df6-e23c9c9c62fc.png)
 
 You can force the controller mapping in linux in ~/.config/PCSX2/inis/PCSX2.ini
 in USB1 and USB2 section
